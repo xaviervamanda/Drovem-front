@@ -2,19 +2,29 @@ import styled from "styled-components";
 import logo from "../assets/logo.png";
 import name from "../assets/name.png";
 import {GoThreeBars} from "react-icons/go";
+import { useState } from "react";
+import NavBar from "./NavBar";
+
 
 export default function Header (){
+    const [open, setOpen] = useState(false);
+
+    function openNavBar (){
+        if (open === false) return setOpen(true);
+        if (open === true) return setOpen(false);
+    }
     return (
         <> 
             <TopBar>
-                <Icon/>
+                <Icon onClick={openNavBar}/>
                 <Name src={name} alt="bussines name"/>
                 <Logo src={logo} alt="logo" />
             </TopBar>
-
+            <NavBar open={open}/>
         </>
     )
 }
+
 
 const TopBar = styled.header`
 z-index: 1;
