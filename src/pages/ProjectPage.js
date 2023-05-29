@@ -22,7 +22,7 @@ export default function ProjectPage (){
                         <Option value="Turma A">Boardcamp</Option>
                         <Option value="Turma B">Shortly</Option>
                     </Select>
-                    <Label for="link">Link do Projeto</Label>
+                    <Label htmlFor="link">Link do Projeto</Label>
                     <Input id="link"/>
                     <Button>ENTREGAR</Button>
                 </SubContainer>

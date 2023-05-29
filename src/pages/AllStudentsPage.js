@@ -1,44 +1,91 @@
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import styled from "styled-components";
-export default function AllStudentsPage (){
+import axios from "axios";
+import Loader from "../components/Loader";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
+export default function AllStudentsPage ({apiUrl, setStudentId, studentId}){
+
+    const [classes, setClasses] = useState(null);
+    const [studentsInfos, setStudentsInfos] = useState([]);
+    const [className, setClassName] = useState("");
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        axios.get(`${apiUrl}/classes`)
+            .then (res => {
+                console.log(res.data)
+                setClasses(res.data)
+                
+            })
+            .catch (err => {
+                console.log(err.response)
+            })
+        setClassName("Turma 1");
+        axios.get(`${apiUrl}/students/classes/1`)
+        .then(res => {
+            setStudentsInfos(res.data);
+        })
+        .catch(err => {
+            toast.error(err.response.data, { autoClose: 3000 });
+        })
+    }, []);
+
+    if (classes === null){
+        return (
+            <>
+
+            <Header />
+            <PrincipalContainer>
+                <ContainerA>
+                </ContainerA>
+                <ContainerB>
+                    <MainText>Estudantes da Turma 1</MainText>
+                    <Loader/>
+                </ContainerB>
+            </PrincipalContainer>
+        </>
+        )
+    }
+
+    function handleClickClassName(id, className){
+        setClassName(className);
+        axios.get(`${apiUrl}/students/classes/${id}`)
+            .then(res => {
+                setStudentsInfos(res.data);
+            })
+            .catch(err => {
+                toast.error(err.response.data, { autoClose: 3000 });
+            })
+    }
+
+
     return (
         <>
 
             <Header />
             <PrincipalContainer>
+                <ToastContainer/>
                 <ContainerA>
-                    <h2>Turma 1</h2>
-                    <h2>Turma 2</h2>
-                    <h2>Turma 1</h2>
-                    <h2>Turma 1</h2>
-                    <h2>Turma 1</h2>
+                    {classes.map((c) => (
+                        <h2 onClick={() => handleClickClassName(c.id, c.name)}>{c.name}</h2>
+                    ))}
                 </ContainerA>
                 <ContainerB>
-                    <MainText>Estudantes da Turma 2</MainText>
-                    <SubContainer>
-                        <Image>
-                            <img src="https://blogcarreiras.cruzeirodosuleducacional.edu.br/wp-content/uploads/2020/12/perfil-de-aluno.jpeg" alt="foto do estudante" />
-                        </Image>
-                        <p>FULANO DE TAL</p>
-                    </SubContainer>
-                    <SubContainer>
-                        <Image>
-                            <img src="https://blogcarreiras.cruzeirodosuleducacional.edu.br/wp-content/uploads/2020/12/perfil-de-aluno.jpeg" alt="foto do estudante" />
-                        </Image>
-                        <p>FULANO DE TAL</p>
-                    </SubContainer>
-                    <SubContainer>
-                        <Image>
-                            <img src="https://blogcarreiras.cruzeirodosuleducacional.edu.br/wp-content/uploads/2020/12/perfil-de-aluno.jpeg" alt="foto do estudante" />
-                        </Image>
-                        <p>FULANO DE TAL</p>
-                    </SubContainer>
-                    <SubContainer>
-                        <Image>
-                            <img src="https://blogcarreiras.cruzeirodosuleducacional.edu.br/wp-content/uploads/2020/12/perfil-de-aluno.jpeg" alt="foto do estudante" />
-                        </Image>
-                        <p>FULANO DE TAL</p>
-                    </SubContainer>
+                    <MainText>Estudantes da {className}</MainText>
+                    {studentsInfos.map(s => (
+                        <SubContainer onClick={() => {
+                            setStudentId(s.studentId)
+                            navigate("/student")
+                        }}>
+                            <Image>
+                                <img src={s.studentImage} alt="foto do estudante" />
+                            </Image>
+                            <p>{s.studentName}</p>
+                        </SubContainer>
+                    ))}
 
                 </ContainerB>
             </PrincipalContainer>
@@ -55,6 +102,7 @@ flex-direction:column;
 align-items:center;
 background: #53616b;
 width:30vw;
+height: 100vh;
 margin-top: 100px;
 padding-top:50px;
 border: 1px solid #222;

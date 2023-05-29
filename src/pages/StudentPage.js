@@ -1,30 +1,61 @@
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import styled from "styled-components";
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Loader from "../components/Loader";
 
-export default function StudentPage (){
+export default function StudentPage ({apiUrl, studentId}){
+
+    const [studentinfos, setStudentInfos] = useState(null);
+
+    useEffect(() => {
+        axios.get(`${apiUrl}/students/${studentId}`)
+            .then(res => {
+                setStudentInfos(res.data);
+            })
+            .catch(err => {
+                toast.error(err.message, { autoClose: 3000 });
+            })
+    }, [])
+
+    if (studentinfos === null){
+        return (
+            <>
+
+            <Header />
+            <Container>
+                <ToastContainer/>
+                <MainText>Registro de Estudante</MainText>
+                <Loader/>
+            </Container>
+        
+        </>
+        )
+    }
+
     return (
         <>
 
             <Header />
             <Container>
+                <ToastContainer/>
                 <MainText>Registro de Estudante</MainText>
                 <Image>
-                    <img src="https://blogcarreiras.cruzeirodosuleducacional.edu.br/wp-content/uploads/2020/12/perfil-de-aluno.jpeg" alt="foto do estudante" />
+                    <img src={studentinfos.student.image} alt="foto do estudante" />
                 </Image>
-                <Text>Nome completo: FULANO DE TAL</Text>
-                <Text>CPF: 111.111.111-11</Text>
-                <Text>E-mail: fulano@detal.com.br</Text>
+                <Text>Nome completo: {studentinfos.student.name}</Text>
+                <Text>CPF: {studentinfos.student.cpf}</Text>
+                <Text>E-mail: {studentinfos.student.email}</Text>
                 <Text>Turmas:</Text>
-                <SubContainer>
-                    <p><strong>Turma 02</strong></p>
-                    <p>Data de ingresso: 02/03/2023</p>
-                    <p>Data de saída: -</p>
-                </SubContainer>
-                <SubContainer>
-                    <p><strong>Turma 01</strong></p>
-                    <p>Data de ingresso: 02/02/2022</p>
-                    <p>Data de saída: 25/05/2022</p>
-                </SubContainer>
+                {studentinfos.Studentclasses.map(c => (
+                    <SubContainer>
+                        <p><strong>{c.className}</strong></p>
+                        <p>Data de ingresso: {c.startDate.slice(0, 10)}</p>
+                        <p>Data de saída: {c.endDate === null ? "-" : c.endDate.slice(0, 10)}</p>
+                    </SubContainer>
+                ))}
             </Container>
         
         </>
@@ -37,7 +68,7 @@ flex-direction:column;
 align-items:center;
 background: #53616b;
 width:100vw;
-// height:100vh;
+height:100vh;
 overflow-y: scroll;
 ::-webkit-scrollbar {
   display: none;

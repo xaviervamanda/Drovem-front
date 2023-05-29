@@ -1,27 +1,112 @@
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import styled from "styled-components";
-export default function RegisterPage (){
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
+export default function RegisterPage ({apiUrl}){
+
+    const initialState = {
+        name: "",
+        cpf: "",
+        email: "",
+        image: "",
+        className: ""
+    };
+    
+
+    const [classes, setClasses] = useState(null);
+    const [formData, setFormData] = useState(initialState);
+    const navigate = useNavigate();
+
+
+    useEffect(() => {
+        axios.get(`${apiUrl}/classes`)
+            .then (res => {
+                console.log(res.data)
+                setClasses(res.data)
+                
+            })
+            .catch (err => {
+                console.log(err.response)
+            })
+    }, [])
+
+    if (classes === null) {
+        return (
+            <>
+            <Header />
+            <Container>
+                <MainText>Cadastro de Estudante</MainText>
+                <Loader/>
+            </Container>
+            </>
+        )
+    }
+
+      function handleForm(e) {
+        e.preventDefault();
+        const body = { ...formData };
+        axios
+          .post(`${apiUrl}/students`, body)
+          .then((res) => {
+            console.log(res.data);
+            setFormData(initialState);
+            toast("Estudante cadastrado com sucesso!", { autoClose: 1500 });
+            navigate("/students");
+          })
+          .catch((err) => {
+            toast.error(err.response.data);
+          });
+      }
+
     return (
         <>
             <Header />
             <Container>
                 <MainText>Cadastro de Estudante</MainText>
-                <SubContainer>
-                    <Label for="name">Nome:</Label>
-                    <Input id="name"/>
-                    <Label for="cpf">CPF:</Label>
-                    <Input id="cpf"/>
-                    <Label for="email">E-mail:</Label>
-                    <Input id="email"/>
-                    <Label for="foto">Foto:</Label>
-                    <Input id="foto"/>
-                    <Select>
+                <SubContainer onSubmit={handleForm}>
+                    <Label htmlFor="name">Nome:</Label>
+                    <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    />
+                    <Label htmlFor="cpf">CPF:</Label>
+                    <Input
+                        id="cpf"
+                        value={formData.cpf}
+                        onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
+                    />
+                    <Label htmlFor="email">E-mail:</Label>
+                    <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    />
+                    <Label htmlFor="foto">Foto:</Label>
+                    <Input
+                        id="foto"
+                        value={formData.image}
+                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    />
+                    <Select
+                        value={formData.className}
+                        onChange={(e) =>
+                        setFormData({ ...formData, className: e.target.value })
+                        }
+                    >
                         <Option value="">Selecione a turma</Option>
-                        <Option value="Turma A">Turma A</Option>
-                        <Option value="Turma B">Turma A</Option>
+                        {classes.map((classe, index) => (
+                            <Option key={index} value={classe.name}>{classe.name}</Option>
+                        ))}
                     </Select>
                     <Button>CADASTRAR</Button>
                 </SubContainer>
+                <ToastContainer/>
             </Container>
             
         </>
@@ -54,7 +139,7 @@ margin-top: 150px;
     position: static;
 }
 `
-const SubContainer = styled.div`
+const SubContainer = styled.form`
 display:flex;
 flex-direction:column;
 background: #0e0f0f;
