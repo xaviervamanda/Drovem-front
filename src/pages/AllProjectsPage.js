@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from "../components/Loader";
 import {IoIosWarning} from "react-icons/io";
+import {AiFillCloseCircle} from "react-icons/ai";
 export default function AllProjectsPage ({apiUrl}){
 
     const [classes, setClasses] = useState(null);
@@ -15,7 +16,9 @@ export default function AllProjectsPage ({apiUrl}){
     const [studentsInfos, setStudentsInfos] = useState([]);
     const [projectId, setProjectId] = useState(null);
     const [classId, setclassId] = useState(null);
+    const [studentId, setStudentId] = useState("");
     const [loading, setLoading] = useState(false);
+    const [containerGradesOpen, setContainerGradesOpen] = useState(false);
 
     useEffect(() => {
         axios.get(`${apiUrl}/classes`)
@@ -82,6 +85,16 @@ export default function AllProjectsPage ({apiUrl}){
             })
     }
 
+    function handleUpdateGrade(grade){
+        axios.put(`${apiUrl}/projects/${studentId}`, {grade})
+        .then(res => {
+            toast("Alteração na nota realizada com sucesso!", { autoClose: 3000 });
+        })
+        .catch(err => {
+            toast.error(err.response.data, { autoClose: 3000 });
+        })
+    }
+
     return (
         <>
 
@@ -114,14 +127,26 @@ export default function AllProjectsPage ({apiUrl}){
                 </ContainerA>
                 <ContainerB>
                     <MainText>{loading ? "Carregando..." : `${projectName} da ${className}`}</MainText>
+                    <ContainerGrades containerGradesOpen={containerGradesOpen} >
+                        <Close onClick={() => setContainerGradesOpen(false)}/>
+                        <Options onClick={() => handleUpdateGrade("Acima das Expectativas")}>Acima das Expectativas</Options>
+                        <Options onClick={() => handleUpdateGrade("Abaixo das Expectativas")}>Abaixo das Expectativas</Options>
+                        <Options onClick={() => handleUpdateGrade("Sem Nota")}>Sem Nota</Options>
+                    </ContainerGrades>
                     {studentsInfos.map(s => (
                         <SubContainer>
                             <Image>
                                 <img src={s.studentImage} alt="foto do estudante" />
                             </Image>
                             <p>{s.studentName}</p>
-                            <h3>{s.grade}</h3>
-                            {s.grade === "Sem Nota" ? <Icon/> : ""}
+                            {s.grade === "Sem Nota" ? <h3 onClick={() => {
+                                setContainerGradesOpen(true)
+                                setStudentId(s.studentProjectId)
+                                }}>{s.grade}</h3> : <h3>{s.grade}</h3>}
+                            {s.grade === "Sem Nota" ? <Icon onClick={() => {
+                                setContainerGradesOpen(true)
+                                setStudentId(s.studentProjectId)
+                                }}/> : ""}
                         </SubContainer>
                     ))}
                 </ContainerB>
@@ -129,6 +154,55 @@ export default function AllProjectsPage ({apiUrl}){
         </>
     )
 }
+
+const Close = styled(AiFillCloseCircle)`
+width: 25px;
+height: 25px;
+color: #33634C;
+position:absolute;
+top:5%;
+right:5%;
+`
+const ContainerGrades = styled.div`
+position: absolute;
+font-family: 'Roboto', sans-serif;
+font-size: 1rem;
+font-weight: 400;
+display:flex;
+flex-direction:column;
+background: #0E0F0F;
+width:40vw;
+height:40vh;
+margin-top:170px;
+padding: 10px;
+padding-top:30px;
+border-radius: 2px;
+box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.5);
+opacity: 0.95;
+position:fixed;
+overflow-y: scroll;
+::-webkit-scrollbar {
+  display: none;
+}
+z-index: 2;
+display: ${props => props.containerGradesOpen ? "flex" : "none"};
+`
+const Options = styled.div`
+width: 80%;
+height: 80px;
+font-family: 'Roboto', sans-serif;
+font-size: 16px;
+font-weight: 700;
+color: #fff;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+margin: 20px auto;
+background: #33634C;
+border-radius: 5px;
+border: 2px solid black;
+`
 
 const Icon = styled(IoIosWarning)`
 width: 20px;
