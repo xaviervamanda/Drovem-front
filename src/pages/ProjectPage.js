@@ -1,29 +1,118 @@
 import Header from "../components/Header";
 import styled from "styled-components";
-export default function ProjectPage (){
+import axios from "axios";
+import { useEffect, useState } from "react";
+import Loader from "../components/Loader";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+export default function ProjectPage ({apiUrl}){
+
+    const initialState = {
+        className: "",
+        studentName: "",
+        projectName: "",
+        link: ""
+    };
+    
+    const [formData, setFormData] = useState(initialState);
+    const [classes, setClasses] = useState(null);
+    const [projects, setProjects] = useState(null);
+    const [students, setStudents] = useState(null);
+
+    useEffect(() => {
+       axios.get(`${apiUrl}/classes`)
+           .then (res => {
+               setClasses(res.data);
+           })
+           .catch (err => {
+               console.log(err.message);
+           })
+        axios.get(`${apiUrl}/projects`)
+        .then (res => {
+            setProjects(res.data);
+        })
+        .catch (err => {
+            console.log(err.message);
+        })
+    }, [])
+
+    function handleForm(e){
+        e.preventDefault();
+        const body = {...formData};
+        axios.post(`${apiUrl}/projects`, body)
+            .then(res => {
+                toast("Projeto entregue com sucesso!", { autoClose: 1500 });
+                setFormData(initialState);
+            })
+            .catch(err => {
+                toast.error(err.message);
+            })
+    }
+
+    function getStudents(classId){
+        axios.get(`${apiUrl}/students/classes/${classId}`)
+        .then (res => {
+            setStudents(res.data);
+        })
+        .catch (err => {
+            console.log(err.message);
+        })
+    }
+
+    if (classes === null || projects === null){
+        return (
+            <>
+
+            <Header />
+            <Container>
+                <MainText>Entrega de Projeto</MainText>
+                <Loader/>
+            </Container>
+        
+        </>
+        )
+    }
+
     return (
         <>
             <Header />
             <Container>
                 <MainText>Entrega de Projeto</MainText>
-                <SubContainer>
+                <ToastContainer/>
+                <SubContainer onSubmit={handleForm}>
                     <Label htmlFor="class">Selecione a Turma:</Label>
-                    <Select id="class">
-                        <Option value="Turma A">Turma A</Option>
-                        <Option value="Turma B">Turma A</Option>
+                    <Select id="class" value={formData.className}
+                        onChange={(e) => {
+                            const selectedClass = classes.find((c) => c.name === e.target.value);
+                            setFormData({ ...formData, className: selectedClass.name });
+                            getStudents(selectedClass.id);
+                        }}>
+                        <Option value=""></Option>
+                        {classes.map((c) => (
+                            <Option value={c.name} >{c.name}</Option>
+                        ))}
                     </Select>
                     <Label htmlFor="name">Selecione o Nome:</Label>
-                    <Select id="name">
-                        <Option value="Turma A">Amanda</Option>
-                        <Option value="Turma B">Bia</Option>
+                    <Select id="name" value={formData.studentName}
+                        onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}>
+                        <Option value=""></Option>
+                        {students === null ? (<Option value=""></Option>) : (
+                            students.map((s) => (
+                            <Option value={s.studentName} >{s.studentName}</Option>
+                            ))
+                        )}
                     </Select>
                     <Label htmlFor="project">Selecione o Projeto:</Label>
-                    <Select id="project">
-                        <Option value="Turma A">Boardcamp</Option>
-                        <Option value="Turma B">Shortly</Option>
+                    <Select id="project" value={formData.projectName}
+                        onChange={(e) => setFormData({ ...formData, projectName: e.target.value })}>
+                        <Option value=""></Option>
+                        {projects.map((p) => (
+                            <Option value={p.name} >{p.name}</Option>
+                        ))}
                     </Select>
                     <Label htmlFor="link">Link do Projeto</Label>
-                    <Input id="link"/>
+                    <Input id="link" value={formData.link}
+                        onChange={(e) => setFormData({ ...formData, link: e.target.value })}/>
                     <Button>ENTREGAR</Button>
                 </SubContainer>
             </Container>
@@ -58,7 +147,7 @@ margin-top: 150px;
     position: static;
 }
 `
-const SubContainer = styled.div`
+const SubContainer = styled.form`
 display:flex;
 flex-direction:column;
 background: #0e0f0f;

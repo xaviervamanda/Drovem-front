@@ -1,65 +1,147 @@
 import Header from "../components/Header";
 import styled from "styled-components";
-export default function AllProjectsPage (){
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Loader from "../components/Loader";
+import {IoIosWarning} from "react-icons/io";
+export default function AllProjectsPage ({apiUrl}){
+
+    const [classes, setClasses] = useState(null);
+    const [projects, setProjects] = useState(null);
+    const [className, setClassName] = useState("");
+    const [projectName, setProjectName] = useState("");
+    const [studentsInfos, setStudentsInfos] = useState([]);
+    const [projectId, setProjectId] = useState(null);
+    const [classId, setclassId] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        axios.get(`${apiUrl}/classes`)
+            .then (res => {
+                setClasses(res.data)
+                
+            })
+            .catch (err => {
+                console.log(err.response)
+            })
+        setClassName("Turma 1");
+        setProjectName("Projeto A");
+        axios.get(`${apiUrl}/projects`)
+            .then (res => {
+                setProjects(res.data);
+            })
+            .catch (err => {
+                console.log(err.message);
+            })
+        axios.get(`${apiUrl}/students/classes/1`)
+            .then(res => {
+                setStudentsInfos(res.data);
+            })
+            .catch(err => {
+                toast.error(err.response.data, { autoClose: 3000 });
+            })
+
+    }, []);
+
+    useEffect(() => {
+        if (projectId !== null && classId !== null) {
+          handleClickClassAndProject();
+        }
+      }, [projectId, classId]);
+
+    if (classes === null || projects === null){
+        return (
+            <>
+            <Header />
+            <PrincipalContainer>
+                <ContainerA>
+                </ContainerA>
+                <ContainerB>
+                    <MainText>Projeto A da Turma 1</MainText>
+                    <Loader/>
+                </ContainerB>
+            </PrincipalContainer>
+        </>
+        )
+    }
+
+    function handleClickClassAndProject(){
+        setLoading(true);
+        axios.get(`${apiUrl}/projects/${projectId}/classes/${classId}`)
+            .then(res => {
+                setStudentsInfos(res.data);
+                setProjectId(null);
+                setclassId(null);
+                setLoading(false);
+            })
+            .catch(err => {
+                toast.error(err.response.data, { autoClose: 3000 });
+                setLoading(false);
+            })
+    }
+
     return (
         <>
 
             <Header />
             <PrincipalContainer>
+                <ToastContainer/>
                 <ContainerA>
                     <Choices>
-                        <h2>Turma 1</h2>
-                        <h2>Turma 2</h2>
-                        <h2>Turma 1</h2>
-                        <h2>Turma 1</h2>
-                        <h2>Turma 1</h2>
+                        {classes.map(c => (
+                            <h2 onClick={() => {
+                                setclassId(c.id)
+                                setLoading(true);
+                                setClassName(c.name)
+                                console.log(c.id)
+                            }}>{c.name}</h2>
+                        ))}
                     </Choices>
 
                     <Choices>
-                        <h2>Projeto A</h2>
-                        <h2>Projeto A</h2>
-                        <h2>Projeto A</h2>
-                        <h2>Projeto A</h2>
-                        <h2>Projeto A</h2>
+                        {projects.map(p => (
+                            <h2 onClick={() => {
+                                setProjectId(p.id)
+                                setLoading(true);
+                                console.log(p.id)
+                                setProjectName(p.name)
+                            }}>{p.name}</h2>
+                        ))}
                     </Choices>
                     
                 </ContainerA>
                 <ContainerB>
-                    <MainText>Projeto A da Turma 2</MainText>
-                    <SubContainer>
-                        <Image>
-                            <img src="https://blogcarreiras.cruzeirodosuleducacional.edu.br/wp-content/uploads/2020/12/perfil-de-aluno.jpeg" alt="foto do estudante" />
-                        </Image>
-                        <p>FULANO DE TAL</p>
-                        <h3>Sem nota</h3>
-                    </SubContainer>
-                    <SubContainer>
-                        <Image>
-                            <img src="https://blogcarreiras.cruzeirodosuleducacional.edu.br/wp-content/uploads/2020/12/perfil-de-aluno.jpeg" alt="foto do estudante" />
-                        </Image>
-                        <p>FULANO DE TAL</p>
-                        <h3>Abaixo das Expectativas</h3>
-                    </SubContainer>
-                    <SubContainer>
-                        <Image>
-                            <img src="https://blogcarreiras.cruzeirodosuleducacional.edu.br/wp-content/uploads/2020/12/perfil-de-aluno.jpeg" alt="foto do estudante" />
-                        </Image>
-                        <p>FULANO DE TAL</p>
-                        <h3>Acima das Expectativas</h3>
-                    </SubContainer>
-                    <SubContainer>
-                        <Image>
-                            <img src="https://blogcarreiras.cruzeirodosuleducacional.edu.br/wp-content/uploads/2020/12/perfil-de-aluno.jpeg" alt="foto do estudante" />
-                        </Image>
-                        <p>FULANO DE TAL</p>
-                        <h3>Sem nota</h3>
-                    </SubContainer>
-
+                    <MainText>{loading ? "Carregando..." : `${projectName} da ${className}`}</MainText>
+                    {studentsInfos.map(s => (
+                        <SubContainer>
+                            <Image>
+                                <img src={s.studentImage} alt="foto do estudante" />
+                            </Image>
+                            <p>{s.studentName}</p>
+                            <h3>{s.grade}</h3>
+                            {s.grade === "Sem Nota" ? <Icon/> : ""}
+                        </SubContainer>
+                    ))}
                 </ContainerB>
             </PrincipalContainer>
         </>
     )
 }
+
+const Icon = styled(IoIosWarning)`
+width: 20px;
+height: 20px;
+position:absolute;
+top:40%;
+right:15%;
+@media screen and (max-width: 1200px){
+    position:absolute;
+    top:40%;
+    right:3%
+}
+`
 
 const PrincipalContainer = styled.div`
 display:flex;
@@ -70,6 +152,7 @@ flex-direction:column;
 align-items:center;
 background: #53616b;
 width:30vw;
+height: 100vh;
 margin-top: 100px;
 padding-top:50px;
 border: 1px solid #222;
@@ -132,12 +215,15 @@ img{
 `
 const SubContainer = styled.div`
 display:flex;
+align-items:center;
+justify-content:space-between;
 background: #fff;
 width:80%;
 height:12vh;
 padding: 10px;
 border-radius: 10px;
 margin-bottom: 30px;
+position:relative;
 p{
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
