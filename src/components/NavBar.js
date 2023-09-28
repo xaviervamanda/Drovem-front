@@ -6,7 +6,6 @@ export default function NavBar ({open}){
             <ContentContainer>
                 <CustomLink to="/"><Pages>Cadastro de estudante</Pages></CustomLink>
                 <CustomLink to="/students"><Pages>Lista de estudantes por turma</Pages></CustomLink>
-                <CustomLink to="/student"><Pages>Perfil de estudante</Pages></CustomLink>
                 <CustomLink to="/project"><Pages>Entrega de projeto</Pages></CustomLink>
                 <CustomLink to="/projects"><Pages>Lista de projetos</Pages></CustomLink>
             </ContentContainer>
