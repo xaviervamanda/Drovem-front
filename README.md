@@ -2,6 +2,9 @@
 
 Drovem is an application for a monitoring system for people studying at a programming bootcamp.
 
+## Project Demo
+![Project Demo]([https://j.gifs.com/vQy2Lm.gif](https://gifs.com/gif/drovem-ywBrVg))
+
 ## How to run for development
 
 ### Installation
