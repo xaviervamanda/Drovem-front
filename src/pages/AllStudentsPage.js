@@ -16,12 +16,10 @@ export default function AllStudentsPage ({apiUrl, setStudentId, studentId}){
     useEffect(() => {
         axios.get(`${apiUrl}/classes`)
             .then (res => {
-                console.log(res.data)
                 setClasses(res.data)
-                
             })
             .catch (err => {
-                console.log(err.response)
+                toast.error("An error occurred. Try again later.", { autoClose: 3000 });
             })
         setClassName("Turma 1");
         axios.get(`${apiUrl}/students/classes/1`)
@@ -29,7 +27,7 @@ export default function AllStudentsPage ({apiUrl, setStudentId, studentId}){
             setStudentsInfos(res.data);
         })
         .catch(err => {
-            toast.error(err.response.data, { autoClose: 3000 });
+            toast.error("An error occurred. Try again later.", { autoClose: 3000 });
         })
     }, []);
 
@@ -136,11 +134,13 @@ color: #222;
 margin-top: 150px;
 margin-bottom: 20px;
 @media screen and (max-width: 900px){
-    height: 80px;
-    width: 80%;
+    font-size: 1.5rem;
+    width: 100%;
+    text-align: center;
     margin-top: 150px;
-    margin-left: 130px;
-    position: static;
+}
+@media screen and (max-width: 400px){
+    width: 50%;
 }
 `
 const Image = styled.div`
@@ -157,6 +157,7 @@ img{
 `
 const SubContainer = styled.div`
 display:flex;
+align-items:center;
 background: #fff;
 width:80%;
 height:12vh;
@@ -168,8 +169,5 @@ p{
     font-size: 1rem;
     font-weight: 400;
     margin: auto 20px;
-}
-@media screen and (max-width: 800px){
-    width: 40%;
 }
 `

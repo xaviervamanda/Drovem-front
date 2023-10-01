@@ -25,12 +25,10 @@ export default function RegisterPage ({apiUrl}){
     useEffect(() => {
         axios.get(`${apiUrl}/classes`)
             .then (res => {
-                console.log(res.data)
                 setClasses(res.data)
-                
             })
             .catch (err => {
-                console.log(err.response)
+                toast.error("An error occurred. Try again later.", { autoClose: 3000 });
             })
     }, [])
 
@@ -52,7 +50,6 @@ export default function RegisterPage ({apiUrl}){
         axios
           .post(`${apiUrl}/students`, body)
           .then((res) => {
-            console.log(res.data);
             setFormData(initialState);
             toast("Estudante cadastrado com sucesso!", { autoClose: 1500 });
             navigate("/students");
@@ -119,7 +116,7 @@ flex-direction:column;
 align-items:center;
 background: #53616b;
 width:100vw;
-// height:100vh;
+height:100vh;
 overflow-y: scroll;
 ::-webkit-scrollbar {
   display: none;
@@ -132,11 +129,9 @@ font-weight: 700;
 color: #222;
 margin-top: 150px;
 @media screen and (max-width: 900px){
-    height: 80px;
-    width: 80%;
+    width: 100%;
     margin-top: 150px;
-    margin-left: 130px;
-    position: static;
+    text-align: center;
 }
 `
 const SubContainer = styled.form`
@@ -144,9 +139,8 @@ display:flex;
 flex-direction:column;
 background: #0e0f0f;
 width:50vw;
-height:70vh;
 margin-top:30px;
-padding: 10px;
+padding: 50px 0;
 border-radius: 10px;
 margin-bottom: 30px;
 `
@@ -179,7 +173,6 @@ color:#fff;
 font-weight: 600;
 margin: 0 auto;
 @media screen and (max-width: 900px){
-    margin: 10px;
     height: 80px;
     width: 80%;
     position: static;

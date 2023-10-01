@@ -27,7 +27,7 @@ export default function AllProjectsPage ({apiUrl}){
                 
             })
             .catch (err => {
-                console.log(err.response)
+                toast.error("An error occurred. Try again later.", { autoClose: 3000 });
             })
         setClassName("Turma 1");
         setProjectName("Projeto A");
@@ -36,7 +36,7 @@ export default function AllProjectsPage ({apiUrl}){
                 setProjects(res.data);
             })
             .catch (err => {
-                console.log(err.message);
+                toast.error("An error occurred. Try again later.", { autoClose: 3000 });
             })
         axios.get(`${apiUrl}/students/classes/1`)
             .then(res => {
@@ -108,7 +108,6 @@ export default function AllProjectsPage ({apiUrl}){
                                 setclassId(c.id)
                                 setLoading(true);
                                 setClassName(c.name)
-                                console.log(c.id)
                             }}>{c.name}</h2>
                         ))}
                     </Choices>
@@ -118,7 +117,6 @@ export default function AllProjectsPage ({apiUrl}){
                             <h2 onClick={() => {
                                 setProjectId(p.id)
                                 setLoading(true);
-                                console.log(p.id)
                                 setProjectName(p.name)
                             }}>{p.name}</h2>
                         ))}

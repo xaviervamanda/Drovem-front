@@ -47,6 +47,9 @@ margin: 20px auto;
 background: #33634C;
 border-radius: 5px;
 border: 2px solid black;
+@media screen and (max-width: 700px){
+    text-align: center;
+}
 `
 const CustomLink = styled(Link)`
 text-decoration:none;

@@ -25,14 +25,14 @@ export default function ProjectPage ({apiUrl}){
                setClasses(res.data);
            })
            .catch (err => {
-               console.log(err.message);
+                toast.error("An error occurred. Try again later.", { autoClose: 3000 });
            })
         axios.get(`${apiUrl}/projects`)
         .then (res => {
             setProjects(res.data);
         })
         .catch (err => {
-            console.log(err.message);
+            toast.error("An error occurred. Try again later.", { autoClose: 3000 });
         })
     }, [])
 
@@ -55,7 +55,7 @@ export default function ProjectPage ({apiUrl}){
             setStudents(res.data);
         })
         .catch (err => {
-            console.log(err.message);
+            toast.error("An error occurred. Try again later.", { autoClose: 3000 });
         })
     }
 
@@ -140,11 +140,9 @@ font-weight: 700;
 color: #222;
 margin-top: 150px;
 @media screen and (max-width: 900px){
-    height: 80px;
-    width: 80%;
+    width: 100%;
     margin-top: 150px;
-    margin-left: 130px;
-    position: static;
+    text-align: center;
 }
 `
 const SubContainer = styled.form`
@@ -152,9 +150,8 @@ display:flex;
 flex-direction:column;
 background: #0e0f0f;
 width:50vw;
-height:70vh;
 margin-top:30px;
-padding: 10px;
+padding: 50px 0;
 border-radius: 10px;
 margin-bottom: 30px;
 `
