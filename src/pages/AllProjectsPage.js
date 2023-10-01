@@ -104,7 +104,7 @@ export default function AllProjectsPage ({apiUrl}){
                 <ContainerA>
                     <Choices>
                         {classes.map(c => (
-                            <h2 onClick={() => {
+                            <h2 key={c.id} onClick={() => {
                                 setclassId(c.id)
                                 setLoading(true);
                                 setClassName(c.name)
@@ -114,7 +114,7 @@ export default function AllProjectsPage ({apiUrl}){
 
                     <Choices>
                         {projects.map(p => (
-                            <h2 onClick={() => {
+                            <h2 key={p.id} onClick={() => {
                                 setProjectId(p.id)
                                 setLoading(true);
                                 setProjectName(p.name)
@@ -131,8 +131,8 @@ export default function AllProjectsPage ({apiUrl}){
                         <Options onClick={() => handleUpdateGrade("Abaixo das Expectativas")}>Abaixo das Expectativas</Options>
                         <Options onClick={() => handleUpdateGrade("Sem Nota")}>Sem Nota</Options>
                     </ContainerGrades>
-                    {studentsInfos.map(s => (
-                        <SubContainer>
+                    {studentsInfos.map((s, index) => (
+                        <SubContainer key={index}>
                             <Image>
                                 <img src={s.studentImage} alt="foto do estudante" />
                             </Image>
@@ -232,6 +232,9 @@ overflow-y: scroll;
 ::-webkit-scrollbar {
   display: none;
 }
+@media screen and (max-width: 600px){
+    width: 20vh;
+}
 `
 const Choices = styled.div`
 display: flex;
@@ -257,6 +260,9 @@ overflow-y: scroll;
 ::-webkit-scrollbar {
   display: none;
 }
+@media screen and (max-width: 600px){
+    width: 80vh;
+}
 `
 const MainText = styled.h1`
 font-family: 'Roboto', sans-serif;
@@ -266,11 +272,13 @@ color: #222;
 margin-top: 150px;
 margin-bottom: 20px;
 @media screen and (max-width: 900px){
-    height: 80px;
-    width: 80%;
+    font-size: 1.5rem;
+    width: 100%;
+    text-align: center;
     margin-top: 150px;
-    margin-left: 130px;
-    position: static;
+}
+@media screen and (max-width: 400px){
+    width: 50%;
 }
 `
 const Image = styled.div`
@@ -295,27 +303,19 @@ height:12vh;
 padding: 10px;
 border-radius: 10px;
 margin-bottom: 30px;
-position:relative;
 p{
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
     font-weight: 400;
-    margin: auto 20px;
-    height: 50%;
 }
 h3{
+    box-sizing: border-box;
     width: 25%;
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
     font-weight: 400;
-    margin: auto 20px;
-    margin-left: 300px;
 }
 @media screen and (max-width: 1000px){
-    width: 80%;
-    overflow: hidden;
-    justify-content: space-between;
-    align-itens: center;
     p{
         margin: 0px;
     }
