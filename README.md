@@ -35,4 +35,5 @@ Click [here](https://drovem-front.vercel.app/).
 ### Main technologies
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=flat&logo=react&logoColor=%2361DAFB)
+![Styled Components](https://img.shields.io/badge/styled--components-DB7093?style=flat&logo=styled-components&logoColor=white)
 ![Axios](https://img.shields.io/badge/axios-671ddf?&style=flat&logo=axios&logoColor=white)
